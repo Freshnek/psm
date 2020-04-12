@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Read</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+    </head>
+    <body>
+        <button id="load-button">Wczytaj dane</button>
+        <table id="books-data-table" class="display">
+            <thead>
+                <tr>
+                    <th>Author Name</th>
+                    <th>Book Title</th>
+                    <th>Book Genre</th>
+                    <th>Publication Year</th>
+                    <th>ISBN</th>
+                </tr>
+            </thead>
+        </table>
+        <script>
+            var firebaseConfig = {
+                apiKey: 'AIzaSyArpzA6gucUnqkGyAUfyxdLOhSRpwcY_2s',
+                authDomain: 'mybook-5587f.firebaseapp.com',
+                databaseURL: 'https://mybook-5587f.firebaseio.com',
+                projectId: 'mybook-5587f',
+                storageBucket: 'mybook-5587f.appspot.com',
+                messagingSenderId: '559820382424',
+                appId: '1:559820382424:web:ac18539f311e2a275ab7ad',
+                measurementId: 'G-3ML8SGN0ZL',
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+
+            var firestore = firebase.firestore();
+            var fragment = document.createDocumentFragment()
+            var table = document.querySelector("#books-data-table")
+            table.setAttribute("border", "1")
+            table.setAttribute("style", "border: solid 1px black")
+
+            const loadButtonEl = document.querySelector('#load-button');
+            loadButtonEl.addEventListener('click', function () {
+                const docs = firestore
+                    .collection('Books')
+                    .get()
+                    .then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            var trEl = document.createElement("tr")
+                            var trValues = [doc.data().authorName, doc.data().bookTitle, doc.data().bookGenre, doc.data().publicationYear, doc.data().ISBN]
+
+                            trValues.forEach(item => {
+                                var td = document.createElement("td")
+                                td.textContent = item
+                                trEl.appendChild(td) 
+                            })
+                            table.appendChild(trEl)
+                        });
+                    });
+            });
+            
+            fragment.appendChild(table)
+            document.body.appendChild(fragment)
+        </script>
+    </body>
+</html>

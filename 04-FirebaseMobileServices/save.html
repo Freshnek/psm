@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Save</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+    </head>
+    <body>
+        <button id="save-button" onclick="jsonDataToSave()">Załaduj dane z pliku</button>
+        <script>
+            var firebaseConfig = {
+                apiKey: 'AIzaSyArpzA6gucUnqkGyAUfyxdLOhSRpwcY_2s',
+                authDomain: 'mybook-5587f.firebaseapp.com',
+                databaseURL: 'https://mybook-5587f.firebaseio.com',
+                projectId: 'mybook-5587f',
+                storageBucket: 'mybook-5587f.appspot.com',
+                messagingSenderId: '559820382424',
+                appId: '1:559820382424:web:ac18539f311e2a275ab7ad',
+                measurementId: 'G-3ML8SGN0ZL',
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+
+            var firestore = firebase.firestore();
+            const saveButtonEl = document.querySelector('#save-button');
+
+            function jsonDataToSave() {
+                const method = 'GET';
+                const jsonFile = '/MOCK_DATA.json';
+                let xhr = new XMLHttpRequest();
+                xhr.open(method, jsonFile, true);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        const data = JSON.parse(xhr.responseText);
+                        data.forEach((book) => {
+                            const docRef = firestore
+                                .collection('Books')
+                                .add({
+                                    authorName: book.author_name,
+                                    bookTitle: book.book_title,
+                                    bookGenre: book.book_genre,
+                                    publicationYear: book.publication_year,
+                                    ISBN: book.isbn,
+                                })
+                                .then(function (docRef) {
+                                    console.log('Document with ID: ' + docRef.id + ' saved');
+                                })
+                                .catch(function (error) {
+                                    console.log('Error: ', error);
+                                });
+                        });
+                    }
+                };
+                xhr.send();
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>AnyBook</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-firestore.js"></script>
+    </head>
+    <body>
+        <h1 id="header">Dowolna ksiazka</h1>
+        <div id="form">
+            Imie i nazwisko autora:
+            <input type="text" id="author-name" /><br />
+            Tytuł ksiazki:
+            <input type="text" id="book-title" /><br />
+            Gatunek ksiazki:
+            <input type="text" id="book-genre" /><br />
+            Rok wydania:
+            <input type="date" id="publication-year" /><br />
+            Numer ISBN:
+            <input type="text" id="isbn" /><br />
+        </div>
+        <div id="book-data"></div>
+        <button id="save-button">Zapisz dane</button>
+        <button id="load-button">Załaduj dane</button>
+
+        <script>
+            var firebaseConfig = {
+                apiKey: 'AIzaSyArpzA6gucUnqkGyAUfyxdLOhSRpwcY_2s',
+                authDomain: 'mybook-5587f.firebaseapp.com',
+                databaseURL: 'https://mybook-5587f.firebaseio.com',
+                projectId: 'mybook-5587f',
+                storageBucket: 'mybook-5587f.appspot.com',
+                messagingSenderId: '559820382424',
+                appId: '1:559820382424:web:ac18539f311e2a275ab7ad',
+                measurementId: 'G-3ML8SGN0ZL',
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+
+            var firestore = firebase.firestore();
+
+            const docRef = firestore.doc('Books/bEwml484O8nPAnwDgRJG');
+            const loadButtonEl = document.querySelector('#load-button');
+            const saveButtonEl = document.querySelector('#save-button');
+            const authorNameEl = document.querySelector('#author-name');
+            const bookTitleEl = document.querySelector('#book-title');
+            const bookGenreEl = document.querySelector('#book-genre');
+            const publicationYearEl = document.querySelector('#publication-year');
+            const isbnEl = document.querySelector('#isbn');
+            const bookDataEl = document.querySelector('#book-data');
+
+            saveButtonEl.addEventListener('click', function () {
+                const name = authorNameEl.value;
+                const title = bookTitleEl.value;
+                const genre = bookGenreEl.value;
+                const year = publicationYearEl.value;
+                const isbn = isbnEl.value;
+                docRef
+                    .set({
+                        ISBN: isbn,
+                        authorName: name,
+                        bookGenre: genre,
+                        bookTitle: title,
+                        publicationYear: year,
+                    })
+                    .then(function () {
+                        console.log('Saved!');
+                    })
+                    .catch(function (error) {
+                        console.log('Error: ', error);
+                    });
+            });
+
+            loadButtonEl.addEventListener('click', function () {
+                docRef
+                    .get()
+                    .then(function (doc) {
+                        if (doc && doc.exists) {
+                            const bookData = doc.data();
+                            bookDataEl.innerText =
+                                'Imię i Nazwisko autora: ' +
+                                bookData.authorName +
+                                '\n' +
+                                'Tytuł ksiązki: ' +
+                                bookData.bookTitle +
+                                '\n' +
+                                'Gatunek ksiązki' +
+                                bookData.bookGenre +
+                                '\n' +
+                                'Rok wydania ksiązki' +
+                                bookData.publicationYear +
+                                '\n' +
+                                'Numer ISBN' +
+                                bookData.ISBN;
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log('Wystapil blad: ', error);
+                    });
+            });
+        </script>
+    </body>
+</html>
